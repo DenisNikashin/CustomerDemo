@@ -8,13 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/version1/customers")
+@RequestMapping("api/version1/customers/")
 public class CustomerRestControllerVersion1 {
 
     @Autowired
@@ -36,7 +35,7 @@ public class CustomerRestControllerVersion1 {
     }
 
     @RequestMapping(value = "",
-                    method = RequestMethod.GET,
+                    method = RequestMethod.POST,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Customer> saveCustomer(@RequestBody @Valid Customer customer) {
         HttpHeaders headers = new HttpHeaders();
@@ -52,34 +51,38 @@ public class CustomerRestControllerVersion1 {
     @RequestMapping(value = "",
                     method = RequestMethod.PUT,
                     produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Customer> updateCustomer(@RequestBody @Valid Customer customer, UriComponentsBuilder builder) {
+    public ResponseEntity<Customer> updateCustomer(@RequestBody @Valid Customer customer) {
         HttpHeaders headers = new HttpHeaders();
 
         if (customer == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        this.customerService.save(customer);
+        customerService.save(customer);
 
         return new ResponseEntity<>(customer, headers, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "{id}",
+                    method = RequestMethod.DELETE,
+                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<Customer> deleteCustomer(@PathVariable("id") Long id) {
-        Customer customer = this.customerService.getById(id);
+        Customer customer = customerService.getById(id);
 
         if (customer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        this.customerService.delete(id);
+        customerService.delete(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "",
+                    method = RequestMethod.GET,
+                    produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<Customer>> getAllCustomers() {
-        List<Customer> customers = this.customerService.getAll();
+        List<Customer> customers = customerService.getAll();
 
         if (customers.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
